@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MyShop.Core.Contracts;
+using MyShop.Core.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -8,9 +10,19 @@ namespace MyShop.WebUI.Controllers
 {
     public class HomeController : Controller
     {
+        IRepository<Product> Context;
+        IRepository<ProductCatergory> productCategories;
+
+        public HomeController(IRepository<Product> productContect, IRepository<ProductCatergory> productCategoryContext)
+        {
+            Context = productContect;
+            productCategories = productCategoryContext;
+        }
+
         public ActionResult Index()
         {
-            return View();
+            List<Product> products = Context.Collection().ToList();
+            return View(products);
         }
 
         public ActionResult About()
@@ -25,6 +37,19 @@ namespace MyShop.WebUI.Controllers
             ViewBag.Message = "Your contact page.";
 
             return View();
+        }
+
+        public ActionResult Details(string Id)
+        {
+            Product product = Context.find(Id);
+            if(product == null)
+            {
+                return HttpNotFound();
+            }
+            else
+            {
+                return View(product);
+            }
         }
     }
 }
